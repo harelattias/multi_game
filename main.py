@@ -118,6 +118,81 @@ temporary_chosen_game = 0
 chosen_game = 0
 on_start_mg()
 
+def calculate_racket_location_pp(loc: number):
+    return (loc + 5) % 5
+def on_start_pp():
+    global num_of_fails_pp
+    reset_game_pp()
+    num_of_fails_pp = 0
+
+
+def reset_game_pp():
+    global ball_loc_x_pp, ball_loc_y_pp, ball_velocity_x_pp, ball_velocity_y_pp, the_end_game_pp
+    ball_loc_x_pp = 1
+    ball_loc_y_pp = 1
+    ball_velocity_x_pp = 1
+    ball_velocity_y_pp = 1
+    the_end_game_pp = 0
+def on_buttonB_pp():
+    global matka_location_pp
+    matka_location_pp = calculate_racket_location_pp(1 + matka_location_pp)
+def on_buttonA_pp():
+    global matka_location_pp
+    matka_location_pp = calculate_racket_location_pp(-1 + matka_location_pp)
+def calc_ball_loc_pp():
+    global ball_velocity_x_pp, ball_velocity_y_pp, the_end_game_pp, num_of_fails_pp, ball_loc_x_pp, ball_loc_y_pp
+    if 3 == ball_loc_y_pp:
+        if ball_loc_x_pp == 0 + matka_location_pp:
+            ball_velocity_x_pp = -1
+            ball_velocity_y_pp = -1
+        elif ball_loc_x_pp == 1 + matka_location_pp:
+            ball_velocity_x_pp = 0
+            ball_velocity_y_pp = -1
+        elif ball_loc_x_pp == 2 + matka_location_pp:
+            ball_velocity_x_pp = 1
+            ball_velocity_y_pp = -1
+        else:
+            the_end_game_pp = 1
+            num_of_fails_pp += 1
+    if 0 == ball_loc_y_pp:
+        ball_velocity_y_pp = 1
+    if 4 == ball_loc_x_pp:
+        ball_velocity_x_pp = -1
+    if 0 == ball_loc_x_pp:
+        ball_velocity_x_pp = 1
+    ball_loc_x_pp = ball_velocity_x_pp + ball_loc_x_pp
+    ball_loc_y_pp = ball_velocity_y_pp + ball_loc_y_pp
+
+
+def forever_pp():
+    if num_of_fails_pp == 3:
+        basic.show_icon(IconNames.SAD)
+        music.play_melody("C5 C D E F G A B ", 500)
+        basic.pause(2000)
+    else:
+        if 1 == the_end_game_pp:
+            reset_game_pp()
+        else:
+            basic.clear_screen()
+            draw_matka_pp()
+            draw_ball_pp()
+            calc_ball_loc_pp()
+            basic.pause(1000)
+def draw_matka_pp():
+    led.plot(calculate_racket_location_pp(0 + matka_location_pp), 4)
+    led.plot(calculate_racket_location_pp(1 + matka_location_pp), 4)
+    led.plot(calculate_racket_location_pp(2 + matka_location_pp), 4)
+def draw_ball_pp():
+    led.plot(ball_loc_x_pp, ball_loc_y_pp)
+matka_location_pp = 0
+the_end_game_pp = 0
+ball_velocity_y_pp = 0
+ball_velocity_x_pp = 0
+ball_loc_y_pp = 0
+ball_loc_x_pp = 0
+num_of_fails_pp = 0
+
+
 def on_forever():
     if 0 == chosen_game:
         forever_sps()
